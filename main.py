@@ -30,7 +30,7 @@ class SonarQubePrComment:
             print(f"VERBOSE: {message}")
 
     def get_quality_gate_status(self):
-        quality_gate_url = f"{self.sonar_host_url}/api/qualitygates/project_status?projectKey={self.sonar_projectkey}"
+        quality_gate_url = f"{self.sonar_host_url}/api/qualitygates/project_status?projectKey={self.sonar_projectkey}&pullRequest={self.pr_number}"
 
         # Debug output for configuration
         self.verbose_print(f"Configuration:")
