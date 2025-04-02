@@ -13,7 +13,7 @@ PR_NUMBER = os.getenv('PR_NUMBER')  # Pull Request number
 GITHUB_API_BASE_URL = os.getenv('GITHUB_API_BASE_URL') or None
 
 def get_quality_gate_status():
-    quality_gate_url = f"{SONAR_HOST_URL}/api/qualitygates/project_status?projectKey={SONAR_PROJECTKEY}"
+    quality_gate_url = f"{SONAR_HOST_URL}/api/qualitygates/project_status?projectKey={SONAR_PROJECTKEY}&pullRequest={PR_NUMBER}"
     # Make the request to the SonarQube API
     response = requests.get(quality_gate_url, auth=(SONAR_TOKEN, ''))
     response.raise_for_status()
