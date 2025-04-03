@@ -1,6 +1,7 @@
 import os
 import requests
 from github import Github
+from requests.exceptions import RequestException
 
 class SonarQubePrComment:
     def __init__(self, sonar_host_url, sonar_projectkey, sonar_token, github_token, repo_name, pr_number, github_api_base_url, verbose):
@@ -56,7 +57,7 @@ class SonarQubePrComment:
             self.verbose_print(f"Quality gate status retrieved: {quality_gate_status}")
 
             return quality_gate_status, project_status
-        except requests.exceptions.RequestException as e:
+        except RequestException as e:
             self.verbose_print(f"Request Exception: {str(e)}")
             raise
         except KeyError as e:
@@ -96,7 +97,9 @@ class SonarQubePrComment:
         except Exception as e:
             match e:
                 case KeyError():
-                    return "quality_check=API ERROR: PARSE ERROR"
+                    return f"quality_check=API ERROR: PARSE ERROR: {str(e)}"
+                case RequestException():
+                    return f"quality_check=API ERROR: REQUEST ERROR: {str(e)}"
                 case _:
                     return f"quality_check=API ERROR: {str(e)}"
 
