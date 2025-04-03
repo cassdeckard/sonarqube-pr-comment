@@ -82,18 +82,23 @@ class SonarQubePrComment:
         return ''.join(details)
 
     def code_validation(self):
-        quality_gate_status, project_status = self.get_quality_gate_status()
-
-        if quality_gate_status == "OK":
-            code_ok = self.extract_code_details(project_status, "OK")
-            result = f"👋 Hey, the Quality Gate has PASSED.{code_ok}"
-        elif quality_gate_status == "ERROR":
-            code_fail = self.extract_code_details(project_status, "ERROR")
-            result = f"👋 Hey, the Quality Gate has FAILED.{code_fail}"
-        else:
-            result = "quality_check=ERROR CONFIGURATION"
-
-        return result
+        try:
+            quality_gate_status, project_status = self.get_quality_gate_status()
+            match quality_gate_status:
+                case "OK":
+                    code_ok = self.extract_code_details(project_status, "OK")
+                    return f"👋 Hey, the Quality Gate has PASSED.{code_ok}"
+                case "ERROR":
+                    code_fail = self.extract_code_details(project_status, "ERROR")
+                    return f"👋 Hey, the Quality Gate has FAILED.{code_fail}"
+                case _:
+                    return "quality_check=ERROR CONFIGURATION"
+        except Exception as e:
+            match e:
+                case KeyError():
+                    return "quality_check=API ERROR: PARSE ERROR"
+                case _:
+                    return f"quality_check=API ERROR: {str(e)}"
 
     def comment_on_pull_request(self, body):
         if not (self.github_token and self.repo_name and self.pr_number):
