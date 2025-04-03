@@ -19,15 +19,39 @@ def verbose_print(message):
 
 def get_quality_gate_status():
     quality_gate_url = f"{SONAR_HOST_URL}/api/qualitygates/project_status?projectKey={SONAR_PROJECTKEY}"
+
+    # Debug output for configuration
+    verbose_print(f"Configuration:")
+    verbose_print(f"SONAR_HOST_URL: {SONAR_HOST_URL}")
+    verbose_print(f"SONAR_PROJECTKEY: {SONAR_PROJECTKEY}")
+    verbose_print(f"SONAR_TOKEN: {'[REDACTED]' if SONAR_TOKEN else 'None'}")
+    verbose_print(f"Quality Gate URL: {quality_gate_url}")
+
     # Make the request to the SonarQube API
-    response = requests.get(quality_gate_url, auth=(SONAR_TOKEN, ''))
-    response.raise_for_status()
-    
-    project_status = response.json()
-    quality_gate_status = project_status['projectStatus']['status']
-    
-    print(f"Quality gate status retrieved: {quality_gate_status}")
-    return quality_gate_status, project_status
+    try:
+        response = requests.get(quality_gate_url, auth=(SONAR_TOKEN, ''))
+        verbose_print(f"Response Status Code: {response.status_code}")
+        verbose_print(f"Response Headers: {response.headers}")
+
+        if response.status_code != 200:
+            verbose_print(f"Error Response Body: {response.text}")
+
+        response.raise_for_status()
+
+        project_status = response.json()
+        verbose_print(f"Full Response JSON: {project_status}")
+
+        quality_gate_status = project_status['projectStatus']['status']
+        print(f"Quality gate status retrieved: {quality_gate_status}")
+
+        return quality_gate_status, project_status
+    except requests.exceptions.RequestException as e:
+        verbose_print(f"Request Exception: {str(e)}")
+        raise
+    except KeyError as e:
+        verbose_print(f"JSON Structure Error: {str(e)}")
+        verbose_print(f"Available Keys: {project_status.keys() if 'project_status' in locals() else 'No response data'}")
+        raise
 
 def extract_code_details(project_status, status_filter):
     # Filter conditions based on status ("OK" or "ERROR")
