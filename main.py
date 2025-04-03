@@ -11,6 +11,11 @@ GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')  # GitHub token
 REPO_NAME = os.getenv('GITHUB_REPOSITORY')  # Ex: "user/repository"
 PR_NUMBER = os.getenv('PR_NUMBER')  # Pull Request number
 GITHUB_API_BASE_URL = os.getenv('GITHUB_API_BASE_URL') or None
+VERBOSE = os.getenv('VERBOSE') == 'true'
+
+def verbose_print(message):
+    if VERBOSE:
+        print(f"VERBOSE: {message}")
 
 def get_quality_gate_status():
     quality_gate_url = f"{SONAR_HOST_URL}/api/qualitygates/project_status?projectKey={SONAR_PROJECTKEY}"
