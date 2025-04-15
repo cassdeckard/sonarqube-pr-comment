@@ -25,6 +25,10 @@ inputs:
   github_api_base_url:
     description: "Base URL for GitHub API"
     required: true
+  verbose:
+    description: "Verbose output"
+    required: false
+    default: "false"
 outputs:
   quality_check:
     description: "Quality check status from SonarQube"
@@ -39,3 +43,4 @@ runs:
     REPO_NAME: ${{ inputs.repo_name }}
     PR_NUMBER: ${{ inputs.pr_number }}
     GITHUB_API_BASE_URL: ${{ inputs.github_api_base_url }}
+    VERBOSE: ${{ inputs.verbose }}
