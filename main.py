@@ -25,12 +25,21 @@ class SonarQubePrComment:
             self.verbose_print(f"GITHUB_API_BASE_URL: {self.github_api_base_url}")
             self.verbose_print(f"VERBOSE: {self.verbose}")
 
+        if self.pr_number is not None and not self.pr_number.isdigit():
+            self.pr_number = None
+        if self.github_token == '':
+            self.github_token = None
+        if self.github_api_base_url == '':
+            self.github_api_base_url = None
+
     def verbose_print(self, message):
         if self.verbose:
             print(f"VERBOSE: {message}")
 
     def get_quality_gate_status(self):
         quality_gate_url = f"{self.sonar_host_url}/api/qualitygates/project_status?projectKey={self.sonar_projectkey}"
+        if self.pr_number is not None:
+            quality_gate_url = f"{quality_gate_url}&pullRequest={self.pr_number}"
 
         # Debug output for configuration
         self.verbose_print(f"Configuration:")
@@ -104,8 +113,9 @@ class SonarQubePrComment:
                     return f"quality_check=API ERROR: {str(e)}"
 
     def comment_on_pull_request(self, body):
-        if not (self.github_token and self.repo_name and self.pr_number):
-            self.verbose_print("Error: GitHub token, repository, or PR number not configured.")
+        if self.pr_number is None or self.github_token is None or self.repo_name is None:
+            self.verbose_print("Error: GitHub token, repository, or PR number not configured. Exiting.")
+            return
 
         # Authenticate with GitHub
         if self.github_api_base_url is not None:
