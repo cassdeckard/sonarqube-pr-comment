@@ -25,7 +25,7 @@ class SonarQubePrComment:
             self.verbose_print(f"GITHUB_API_BASE_URL: {self.github_api_base_url}")
             self.verbose_print(f"VERBOSE: {self.verbose}")
 
-        if not self.pr_number.isdigit():
+        if self.pr_number is not None and not self.pr_number.isdigit():
             self.pr_number = None
         if self.github_token == '':
             self.github_token = None
