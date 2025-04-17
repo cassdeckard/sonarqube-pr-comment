@@ -31,6 +31,13 @@ class SonarQubePrComment:
             self.github_token = None
         if self.github_api_base_url == '':
             self.github_api_base_url = None
+        else:
+            self.github_token = self.github_token.rstrip('/')
+        if self.sonar_host_url == '':
+            self.verbose_print("Error: SonarQube host URL not configured. Exiting.")
+            exit(1)
+        else:
+            self.sonar_host_url = self.sonar_host_url.rstrip('/')
 
     def verbose_print(self, message):
         if self.verbose:
