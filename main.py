@@ -31,6 +31,13 @@ class SonarQubePrComment:
             self.github_token = None
         if self.github_api_base_url == '':
             self.github_api_base_url = None
+        else:
+            self.github_token = self.github_token.rstrip('/')
+        if self.sonar_host_url == '':
+            self.verbose_print("Error: SonarQube host URL not configured. Exiting.")
+            exit(1)
+        else:
+            self.sonar_host_url = self.sonar_host_url.rstrip('/')
 
     def verbose_print(self, message):
         if self.verbose:
@@ -127,8 +134,10 @@ class SonarQubePrComment:
         pull_request = repo.get_pull(int(self.pr_number))
 
         self.verbose_print(f"Commenting on Pull Request #{self.pr_number}.")
+
         # Comment on the Pull Request
-        pull_request.create_issue_comment(body)
+        sonar_report_url = f"{self.sonar_host_url}/dashboard?id={self.sonar_projectkey}&pullRequest={self.pr_number}"
+        pull_request.create_issue_comment(f"{body}\n\n[(🔗See the full report)]({sonar_report_url})")
 
 if __name__ == "__main__":
 
