@@ -127,8 +127,10 @@ class SonarQubePrComment:
         pull_request = repo.get_pull(int(self.pr_number))
 
         self.verbose_print(f"Commenting on Pull Request #{self.pr_number}.")
+
         # Comment on the Pull Request
-        pull_request.create_issue_comment(body)
+        sonar_report_url = f"{self.sonar_host_url}/dashboard?id={self.sonar_projectkey}&pullRequest={self.pr_number}"
+        pull_request.create_issue_comment(f"{body}\n\n[(🔗See the full report)]({sonar_report_url})")
 
 if __name__ == "__main__":
 
